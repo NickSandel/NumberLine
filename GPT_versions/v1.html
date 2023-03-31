@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+    This was built from asking ChatGPT for some code with prompt: 
+    "Can you give me code to build a number line on a html page, it can make use of css and javascript"
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #number-line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+            width: 100%;
+            font-size: 24px;
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+
+        #number-line span {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="number-line"></div>
+
+    <script>
+        const numberLine = document.getElementById('number-line');
+
+        for (let i = -10; i <= 10; i++) {
+            const number = document.createElement('span');
+            number.innerText = i;
+            numberLine.appendChild(number);
+        }
+
+    </script>
+</body>
