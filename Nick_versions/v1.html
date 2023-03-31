@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #number-line-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #numberline {
+            position: relative;
+            width: 100%;
+            height: 15px;
+            transform-origin: left center;
+            overflow: hidden;
+        }
+
+        /* Align the table ruler cells with the number values row */
+        .numberline {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        /* Make the ruler cells have a bottom and right side border */
+        .ruler th {
+            height: 15px;
+            border-top: 2px solid black;
+        }
+
+        .ruler th:nth-child(odd) {
+            border-right: 2px solid black;
+        }
+
+        .numbers td {
+            text-align: center;
+        }
+    </style>
+    <script>
+        function resizetable() {
+            // Get the value of the zoom slider
+            var zoom = document.querySelector('input[name="ruler-space"]').value;
+            // Get the table element
+            var table = document.querySelector('.numberline');
+            // Rebuild the table headers to have a number of rows equal to the zoom value * 2
+            var ruler = document.querySelector('.ruler');
+            ruler.innerHTML = '';
+            for (var i = 0; i < zoom * 2; i++) {
+                var th = document.createElement('th');
+                // Set width to be equal across the th elements
+                th.style.width = 100 / (zoom * 2) + '%';
+                ruler.appendChild(th);
+            }
+            // Rebuild the table numbers to have a number of rows equal to the zoom value
+            var numbers = document.querySelector('.numbers');
+            numbers.innerHTML = '';
+            for (var i = 0; i < zoom; i++) {
+                var td = document.createElement('td');
+                td.setAttribute('colspan', 2);
+                // Set width to be equal across the th elements
+                td.style.width = 100 / zoom + '%';
+                td.innerHTML = i;
+                numbers.appendChild(td);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="params">
+        <!-- Have a text box and submit button to trigger javascript to redefine the contents for the numberline table -->
+        <form id="app" class="editor">
+            <fieldset>
+                <legend>Number Line</legend>
+                <label>
+                    <strong>Zoom</strong>
+                    <input onchange="resizetable()" type="range" name="ruler-space" min="1" max="100" value="10">
+                </label>
+            </fieldset>
+    </div>
+    <div id="number-line-container">
+        <table id="number-line" class="numberline">
+            <tr class="ruler">
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr class="numbers">
+                <td colspan="2">0</td>
+                <td colspan="2">1</td>
+                <td colspan="2">2</td>
+                <td colspan="2">3</td>
+                <td colspan="2">4</td>
+                <td colspan="2">5</td>
+            </tr>
+        </table>
+    </div>
+    <script>
+        resizetable();
+
+        const numberLine = document.getElementById('number-line-container');
+
+        numberLine.addEventListener('wheel', event => {
+            event.preventDefault();
+
+            // Increase or decrease the zoom value based on the scroll direction
+            if (event.deltaY < 0) {
+                document.querySelector('input[name="ruler-space"]').value--;
+            } else {
+                document.querySelector('input[name="ruler-space"]').value++;
+            }
+            resizetable();
+        });
+    </script>
+</body>
