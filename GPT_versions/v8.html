@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- This was built from asking ChatGPT for some code (27/03/2023) -->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #number-line-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #number-line {
+            position: relative;
+            width: 100%;
+            height: 15px;
+            transform-origin: left center;
+            overflow: hidden;
+        }
+
+        #number-line:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            border-top: 2px solid black;
+            transform-origin: left center;
+        }
+
+        .number {
+            position: absolute;
+            top: -25px;
+            width: 1px;
+            height: 20px;
+            background-color: black;
+            transform-origin: top center;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .number.small {
+            height: 10px;
+        }
+
+        .number.big {
+            height: 30px;
+            font-size: 16px;
+        }
+
+        #number-line-labels {
+            position: absolute;
+            top: -55px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="number-line-container">
+        <div id="number-line">
+            <div id="tick-marks"></div>
+            <div id="numbers"></div>
+        </div>
+    </div>
+
+    <script>
+        const numberLine = document.getElementById('number-line');
+        const tickMarks = document.getElementById('tick-marks');
+        const numbers = document.getElementById('numbers');
+
+        let scale = 1;
+        let minScale = 0.1;
+        let maxScale = 10;
+        let zoomSpeed = 0.2;
+
+        function updateNumberLine() {
+            const tickDistance = scale < 1 ? 10 : Math.pow(10, Math.floor(Math.log10(scale)));
+            const tickCount = Math.round(numberLine.offsetWidth / (tickDistance * 100));
+            tickMarks.style.backgroundSize = `${tickDistance * 100}% 100%`;
+            tickMarks.style.transform = `scaleX(${tickDistance})`;
+
+            const minNumber = Math.floor(-numberLine.scrollLeft / (tickDistance * 100));
+            const maxNumber = minNumber + tickCount;
+            numbers.innerHTML = '';
+
+            for (let i = minNumber; i <= maxNumber; i++) {
+                const number = document.createElement('span');
+                number.innerText = i * tickDistance;
+                number.style.left = `${i * tickDistance * 100}px`;
+                numbers.appendChild(number);
+            }
+        }
+
+        updateNumberLine();
+
+        numberLine.addEventListener('wheel', event => {
+            event.preventDefault();
+
+            const oldScale = scale;
+            scale += event.deltaY > 0 ? -zoomSpeed : zoomSpeed;
+            scale = Math.min(Math.max(scale, minScale), maxScale);
+
+            updateNumberLine();
+
+            const zoomRatio = scale / oldScale;
+            const newWidth = numberLine.offsetWidth * zoomRatio;
+
+            const mousePosition = event.clientX - numberLine.getBoundingClientRect().left;
+            const scrollOffset = (mousePosition / numberLine.offsetWidth) * (numberLine.scrollWidth - newWidth);
+
+            numberLine.style.width = newWidth + 'px';
+            numberLine.style.transform = `scale(${scale})`;
+            numberLine.scrollLeft = scrollOffset;
+        });
+
+        // Hide scrollbar
+        // numberLine.addEventListener('mouseenter', () => {
+        //     numberLine.style.overflowX = 'auto';
+        // });
+
+        // numberLine.addEventListener('mouseleave', () => {
+        //     numberLine.style.overflowX = 'scroll';
+        // });
+    </script>
+</body>
